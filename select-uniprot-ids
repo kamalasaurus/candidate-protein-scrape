@@ -1,0 +1,59 @@
+#!/usr/bin/ruby
+
+# Read in AGI2uniprot.txt
+file = File.open("./AGI2uniprot.txt", "r")
+
+# Create an empty hash
+hash = {}
+
+# Split each line by white space and populate the hash
+file.each_line do |line|
+  key, value = line.split(" ")
+  
+  # Check if the key already exists in the hash
+  if hash.key?(key)
+    # If it exists, append the value to the existing array
+    hash[key] << value
+  else
+    # If it doesn't exist, create a new array with the value
+    hash[key] = [value]
+  end
+end
+
+# Close the file
+file.close
+
+# Print the hash
+#puts hash
+
+# Read in unique-ortho-genes.txt
+ortho_file = File.open("./unique-ortho-genes-27.txt", "r")
+# Create an empty array
+ortho_array = []
+# Populate the array with each line as an entry
+ortho_file.each_line do |line|
+  ortho_array << line.chomp
+end
+# Close the file
+ortho_file.close
+
+# Print the array
+#puts ortho_array
+
+output_array = []
+
+ortho_array.each do |ortho_gene|
+  if hash.key?(ortho_gene)
+    output_array << "#{hash[ortho_gene].join("\n")}"
+  end
+end
+
+output_array.flatten!
+
+output_file = File.open("./uniprot-ids-27.txt", "w")
+
+output_array.uniq.each do |line|
+  output_file.puts line
+end
+
+output_file.close
